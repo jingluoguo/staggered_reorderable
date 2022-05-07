@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [![pub package](https://img.shields.io/pub/v/staggered_reorderable.svg)](https://pub.dartlang.org/packages/staggered_reorderable)
 
 ## 效果图
@@ -51,7 +50,5 @@ import 'package:staggered_reorderable/staggered_reorderable.dart';
 ## 贡献
 
 感谢我的同事大佬帮我提供思路
+
 感谢[Flutter - 通过CustomMultiChildLayout自定义环形布局](https://juejin.cn/post/7028084846895300638)
-=======
-# staggered_reorderable
->>>>>>> 696af21efa9d7956241d75e6373477231525215f
