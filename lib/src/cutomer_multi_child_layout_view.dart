@@ -211,7 +211,6 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
   @override
   Widget build(BuildContext context) {
-    maxHeight = MediaQuery.of(context).size.height - 106.0;
     return SingleChildScrollView(
       child: SizedBox(
         height: maxHeight,
@@ -307,6 +306,7 @@ class ProxyClass extends MultiChildLayoutDelegate {
   }
 
   /// 修改columnH
+  /// 将上一行高度更新成当前行的最高高度
   void updateColumnH(List columnH, List columnLastH) {
     double maxHeight = columnH.fold(
         columnH[0],
@@ -379,6 +379,14 @@ class ProxyClass extends MultiChildLayoutDelegate {
       /// 放置当前widget
       positionChild(element.id, element.offset);
     }
+    // 刷新最高高度
+    var tempHeight = 0.0;
+    for (var element in columnH) {
+      tempHeight = max(tempHeight, element);
+    }
+    if(tempHeight != 0.0){
+      maxHeight = tempHeight;
+    }
     columnH.clear();
     columnLastH.clear();
   }
@@ -413,11 +421,6 @@ class ProxyClass extends MultiChildLayoutDelegate {
           calculateDragFormLayout(itemChangeAll);
       var item = calculateOffset(itemPositionList, dragItemPosition);
       positionItem(item);
-    }
-
-    // 刷新最高高度
-    for (var element in columnH) {
-      maxHeight = max(maxHeight, element);
     }
   }
 

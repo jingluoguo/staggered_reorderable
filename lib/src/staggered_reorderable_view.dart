@@ -5,7 +5,7 @@ import 'item_model.dart';
 
 /// guoshijun created this file at 2022/5/7 4:22 下午
 ///
-/// 不规则图形可拖拽
+/// 可拖拽的不规则图形瀑布流
 
 class StaggeredReorderableView extends StatelessWidget {
   /// 布局方向[Axis.vertical] 和[Axis.horizontal]。
