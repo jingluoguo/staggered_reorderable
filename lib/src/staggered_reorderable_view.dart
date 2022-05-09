@@ -38,12 +38,28 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 布局区域高度，仅在[Axis.horizontal]时生效
   final double containerHeight;
 
+  /// 创建一个可拖动的不规则图形瀑布流.
+  ///
+  /// [canDrag] : 控制是否允许拖动,默认为`true`.
+  ///
+  /// [columnNum] : 控制每行([Axis.vertical])/每列([Axis.horizontal])展示的基本单元数量,默认为每行.
+  ///
+  /// [scrollDirection] : 控制排版方向,默认为[Axis.vertical].
+  ///
+  /// [duration] : 每次交换的动画持续时间,默认0.3s.
+  ///
+  /// [antiShakeDuration] : 防抖时间,默认0.1s.
+  ///
+  /// [collation] : 拖拽交换规则,[true]为交换，[false]为插入.
+  ///
+  /// [containerHeight] : 当 [scrollDirection] 选择 [Axis.horizontal] 时,才会生效.
+  ///
   const StaggeredReorderableView.customer({
     Key? key,
     required List<CustomerItem> children,
     Axis scrollDirection = Axis.vertical,
     Duration duration = const Duration(milliseconds: 300),
-    Duration? antiShakeDuration,
+    Duration antiShakeDuration = const Duration(milliseconds: 100),
     bool collation = false,
     int columnNum = 3,
     double padding = 5.0,
@@ -54,7 +70,7 @@ class StaggeredReorderableView extends StatelessWidget {
           children: children,
           scrollDirection: scrollDirection,
           duration: duration,
-          antiShakeDuration: const Duration(milliseconds: 100),
+          antiShakeDuration: antiShakeDuration,
           collation: collation,
           columnNum: columnNum,
           padding: padding,
