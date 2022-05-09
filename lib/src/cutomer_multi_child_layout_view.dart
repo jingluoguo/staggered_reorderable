@@ -17,16 +17,22 @@ class CustomerMultiChildView extends StatefulWidget {
   final int columnNum;
   final List<CustomerItem> itemAll;
   final double padding;
-  final Duration? duration;
-  final Duration? antiShakeDuration;
+  final Duration duration;
+  final Duration antiShakeDuration;
   final bool collation;
   final bool canDrag;
-  const CustomerMultiChildView(this.itemAll, this.columnNum, this.padding, this.canDrag,
-      {Key? key,
-      this.collation = false,
-      this.antiShakeDuration,
-      this.duration})
-      : super(key: key);
+  final Axis scrollDirection;
+  const CustomerMultiChildView(
+    this.itemAll,
+    this.columnNum,
+    this.padding,
+    this.duration,
+    this.antiShakeDuration,
+    this.canDrag, {
+    Key? key,
+    this.collation = false,
+    this.scrollDirection = Axis.vertical,
+  }) : super(key: key);
 
   @override
   _CustomerMultiChildViewState createState() => _CustomerMultiChildViewState();
@@ -59,7 +65,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
       lowerBound: 0.0,
       upperBound: 1.0,
       vsync: this,
-      duration: widget.duration??const Duration(milliseconds: 300),
+      duration: widget.duration,
     )..addListener(() {
         process = _controller.value;
         if (_controller.isCompleted) {
@@ -75,7 +81,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   void antiShakeProcessing(moveIndex, toIndex) {
     nowMoveIndex = moveIndex;
     nowAcceptIndex = toIndex;
-    Future.delayed(widget.antiShakeDuration??const Duration(milliseconds: 100)).then((value) {
+    Future.delayed(widget.antiShakeDuration).then((value) {
       if (nowMoveIndex == moveIndex && nowAcceptIndex == toIndex) {
         nowMoveIndex = -1;
         nowAcceptIndex = -1;
@@ -142,11 +148,72 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   Widget generateItem(int index) {
     return LayoutId(
         id: itemAll[index].id!,
-        child: widget.canDrag ? LongPressDraggable(
-          data: itemAll[index].index,
-          child: DragTarget(
-            builder: (context, candidateData, rejectedData) {
-              return Container(
+        child: widget.canDrag
+            ? LongPressDraggable(
+                data: itemAll[index].index,
+                child: DragTarget(
+                  builder: (context, candidateData, rejectedData) {
+                    return Container(
+                      width: itemAll[index].crossAxisCellCount! * itemCell,
+                      height: itemAll[index].mainAxisCellCount! * itemCell,
+                      color: Colors.grey,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: Center(child: itemAll[index].child),
+                      ),
+                    );
+                  },
+                  onWillAccept: (moveData) {
+                    // print('=== onWillAccept: $moveData ==> ${itemAll[index].index}');
+                    var accept = moveData != null;
+                    if (accept &&
+                        dragItem != itemAll[index].index! &&
+                        itemAll[index].index != moveData) {
+                      antiShakeProcessing(moveData, itemAll[index].index);
+                    }
+                    return accept;
+                  },
+                  onLeave: (moveData) {
+                    // print('=== onLeave: $moveData ==> ${itemAll[index].index}');
+                    if (moveData == nowMoveIndex) {
+                      nowMoveIndex = -1;
+                    }
+                    if (itemAll[index].index == nowAcceptIndex) {
+                      nowAcceptIndex = -1;
+                    }
+                  },
+                ),
+                childWhenDragging: null,
+                feedback: Material(
+                  child: Container(
+                    width: itemAll[index].crossAxisCellCount! * itemCell,
+                    height: itemAll[index].mainAxisCellCount! * itemCell,
+                    color: Colors.white,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Center(
+                        child: itemAll[index].child,
+                      ),
+                    ),
+                  ),
+                ),
+                onDragStarted: () {
+                  // print('=== onDragStarted');
+                  dragItem = itemAll[index].index!;
+                },
+                onDraggableCanceled: (Velocity velocity, Offset offset) {
+                  // print('=== onDraggableCanceled');
+                },
+                onDragCompleted: () {
+                  // print('=== onDragCompleted');
+                  dragItem = -1;
+                  nowAcceptIndex = -1;
+                  nowMoveIndex = -1;
+                },
+              )
+            : Container(
                 width: itemAll[index].crossAxisCellCount! * itemCell,
                 height: itemAll[index].mainAxisCellCount! * itemCell,
                 color: Colors.grey,
@@ -155,66 +222,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   height: double.infinity,
                   child: Center(child: itemAll[index].child),
                 ),
-              );
-            },
-            onWillAccept: (moveData) {
-              // print('=== onWillAccept: $moveData ==> ${itemAll[index].index}');
-              var accept = moveData != null;
-              if (accept &&
-                  dragItem != itemAll[index].index! &&
-                  itemAll[index].index != moveData) {
-                antiShakeProcessing(moveData, itemAll[index].index);
-              }
-              return accept;
-            },
-            onLeave: (moveData) {
-              // print('=== onLeave: $moveData ==> ${itemAll[index].index}');
-              if (moveData == nowMoveIndex) {
-                nowMoveIndex = -1;
-              }
-              if (itemAll[index].index == nowAcceptIndex) {
-                nowAcceptIndex = -1;
-              }
-            },
-          ),
-          childWhenDragging: null,
-          feedback: Material(
-            child: Container(
-              width: itemAll[index].crossAxisCellCount! * itemCell,
-              height: itemAll[index].mainAxisCellCount! * itemCell,
-              color: Colors.white,
-              child: SizedBox(
-                width: double.infinity,
-                height: double.infinity,
-                child: Center(
-                  child: itemAll[index].child,
-                ),
-              ),
-            ),
-          ),
-          onDragStarted: () {
-            // print('=== onDragStarted');
-            dragItem = itemAll[index].index!;
-          },
-          onDraggableCanceled: (Velocity velocity, Offset offset) {
-            // print('=== onDraggableCanceled');
-          },
-          onDragCompleted: () {
-            // print('=== onDragCompleted');
-            dragItem = -1;
-            nowAcceptIndex = -1;
-            nowMoveIndex = -1;
-          },
-        ) : Container(
-          width: itemAll[index].crossAxisCellCount! * itemCell,
-          height: itemAll[index].mainAxisCellCount! * itemCell,
-          color: Colors.grey,
-          child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: Center(child: itemAll[index].child),
-          ),
-        ));
+              ));
   }
 
   List<Widget> generateList() {
@@ -400,7 +408,7 @@ class ProxyClass extends MultiChildLayoutDelegate {
     for (var element in columnH) {
       tempHeight = max(tempHeight, element);
     }
-    if(tempHeight != 0.0){
+    if (tempHeight != 0.0) {
       maxHeight = tempHeight;
     }
     columnH.clear();

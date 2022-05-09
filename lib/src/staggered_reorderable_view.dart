@@ -13,10 +13,10 @@ class StaggeredReorderableView extends StatelessWidget {
   final Axis scrollDirection;
 
   /// 动画时间，默认[Duration(milliseconds: 300)]。
-  final Duration? duration;
+  final Duration duration;
 
   /// 防抖时间，默认[Duration(milliseconds: 100)]
-  final Duration? antiShakeDuration;
+  final Duration antiShakeDuration;
 
   /// 拖拽后变换规则，[true]为交换，[false]为插入
   final bool collation;
@@ -35,11 +35,11 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 是否允许拖拽
   final bool canDrag;
 
-  StaggeredReorderableView.customer({
+  const StaggeredReorderableView.customer({
     Key? key,
     required List<CustomerItem> children,
     Axis scrollDirection = Axis.vertical,
-    Duration? duration,
+    Duration duration = const Duration(milliseconds: 300),
     Duration? antiShakeDuration,
     bool collation = false,
     int columnNum = 3,
@@ -50,7 +50,7 @@ class StaggeredReorderableView extends StatelessWidget {
           children: children,
           scrollDirection: scrollDirection,
           duration: duration,
-          antiShakeDuration: antiShakeDuration,
+          antiShakeDuration: const Duration(milliseconds: 100),
           collation: collation,
           columnNum: columnNum,
           padding: padding,
@@ -61,8 +61,8 @@ class StaggeredReorderableView extends StatelessWidget {
     Key? key,
     required this.children,
     this.scrollDirection = Axis.vertical,
-    this.duration,
-    this.antiShakeDuration,
+    this.duration = const Duration(milliseconds: 300),
+    this.antiShakeDuration = const Duration(milliseconds: 100),
     this.collation = false,
     this.columnNum = 3,
     this.padding = 5.0,
@@ -71,6 +71,8 @@ class StaggeredReorderableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomerMultiChildView(children, columnNum, padding, canDrag, collation: collation, antiShakeDuration: antiShakeDuration,);
+    return CustomerMultiChildView(
+        children, columnNum, padding, duration, antiShakeDuration, canDrag,
+        collation: collation, scrollDirection: scrollDirection);
   }
 }
