@@ -1,6 +1,6 @@
 name: staggered_reorderable
 description: 可拖拽的不规则图形排序
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/jingluoguo/staggered_reorderable
 
 environment:
