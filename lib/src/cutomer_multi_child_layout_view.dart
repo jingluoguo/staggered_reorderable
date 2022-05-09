@@ -20,7 +20,8 @@ class CustomerMultiChildView extends StatefulWidget {
   final Duration? duration;
   final Duration? antiShakeDuration;
   final bool collation;
-  const CustomerMultiChildView(this.itemAll, this.columnNum, this.padding,
+  final bool canDrag;
+  const CustomerMultiChildView(this.itemAll, this.columnNum, this.padding, this.canDrag,
       {Key? key,
       this.collation = false,
       this.antiShakeDuration,
@@ -141,7 +142,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   Widget generateItem(int index) {
     return LayoutId(
         id: itemAll[index].id!,
-        child: Draggable(
+        child: widget.canDrag ? LongPressDraggable(
           data: itemAll[index].index,
           child: DragTarget(
             builder: (context, candidateData, rejectedData) {
@@ -149,8 +150,10 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 width: itemAll[index].crossAxisCellCount! * itemCell,
                 height: itemAll[index].mainAxisCellCount! * itemCell,
                 color: Colors.grey,
-                child: Center(
-                  child: itemAll[index].child,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Center(child: itemAll[index].child),
                 ),
               );
             },
@@ -180,8 +183,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
               width: itemAll[index].crossAxisCellCount! * itemCell,
               height: itemAll[index].mainAxisCellCount! * itemCell,
               color: Colors.white,
-              child: Center(
-                child: itemAll[index].child,
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Center(
+                  child: itemAll[index].child,
+                ),
               ),
             ),
           ),
@@ -198,6 +205,15 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
             nowAcceptIndex = -1;
             nowMoveIndex = -1;
           },
+        ) : Container(
+          width: itemAll[index].crossAxisCellCount! * itemCell,
+          height: itemAll[index].mainAxisCellCount! * itemCell,
+          color: Colors.grey,
+          child: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(child: itemAll[index].child),
+          ),
         ));
   }
 
