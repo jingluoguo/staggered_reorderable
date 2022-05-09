@@ -35,6 +35,9 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 是否允许拖拽
   final bool canDrag;
 
+  /// 布局区域高度，仅在[Axis.horizontal]时生效
+  final double containerHeight;
+
   const StaggeredReorderableView.customer({
     Key? key,
     required List<CustomerItem> children,
@@ -45,6 +48,7 @@ class StaggeredReorderableView extends StatelessWidget {
     int columnNum = 3,
     double padding = 5.0,
     bool canDrag = true,
+    double containerHeight = 600.0
   }) : this(
           key: key,
           children: children,
@@ -55,6 +59,7 @@ class StaggeredReorderableView extends StatelessWidget {
           columnNum: columnNum,
           padding: padding,
           canDrag: canDrag,
+    containerHeight: containerHeight
         );
 
   const StaggeredReorderableView({
@@ -67,12 +72,13 @@ class StaggeredReorderableView extends StatelessWidget {
     this.columnNum = 3,
     this.padding = 5.0,
     this.canDrag = true,
+    this.containerHeight = 600.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomerMultiChildView(
         children, columnNum, padding, duration, antiShakeDuration, canDrag,
-        collation: collation, scrollDirection: scrollDirection);
+        collation: collation, scrollDirection: scrollDirection, containerHeight: containerHeight);
   }
 }
