@@ -1,7 +1,11 @@
-## 0.0.1
+## 0.0.3
 
-* TODO: 可支持拖拽排序不规则图形瀑布流
+* TODO: 支持不允许拖拽(即：不规则图形瀑布流)、动态刷新staggered_reorderable组件所占大小、支持横向排版
 
 ## 0.0.2
 
-* TODO: 支持macos,windows
+* TODO: 支持macos,windows平台
+
+## 0.0.1
+
+* TODO: 可支持拖拽排序不规则图形瀑布流

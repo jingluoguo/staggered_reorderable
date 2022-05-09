@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('staggered_reorderable example app'),
         ),
-        body: StaggeredReorderableView.customer(children: itemAll, collation: true),
+        body: StaggeredReorderableView.customer(children: itemAll),
       ),
     );
   }
