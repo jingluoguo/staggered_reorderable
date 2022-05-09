@@ -243,7 +243,9 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     if (maxContainerWidth == 0.0) {
       maxContainerWidth = MediaQuery.of(context).size.width;
     }
-    // print(maxContainerWidth);
+    if (maxContainerHeight == 0.0) {
+      maxContainerHeight = MediaQuery.of(context).size.height;
+    }
     return SingleChildScrollView(
       scrollDirection: widget.scrollDirection,
       child: SizedBox(
