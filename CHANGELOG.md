@@ -1,3 +1,7 @@
+## 0.0.6
+
+* TODO: 修改SDK限制为`sdk: ">=2.16.2"`；plugin -> package；
+
 ## 0.0.5
 
 * TODO: 优化包结构
@@ -8,7 +12,7 @@
 
 ## 0.0.3
 
-* TODO: 支持不允许拖拽(即：不规则图形瀑布流)、动态刷新staggered_reorderable组件所占大小、支持横向排版
+* TODO: 支持不规则拖拽(即：不规则图形瀑布流)、动态刷新staggered_reorderable组件所占大小、支持横向排版
 
 ## 0.0.2
 
