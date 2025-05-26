@@ -1,3 +1,11 @@
+## 0.0.11
+
+* TODO: onWillAccept -> onWillAcceptWithDetails
+
+## 0.0.10
+
+* TODO: Modify SDK restriction to `sdk: ">=2.16.2 <=3.8.0"`;
+
 ## 0.0.9
 
 * TODO: Optimization Warning
@@ -15,7 +23,7 @@
 ## 0.0.6
 
 * TODO: 
-  * Modify SDK restriction to `sdk: ">=2.16.2 <=3.8.0"`;
+  * Modify SDK restriction to `sdk: ">=2.16.2 <3.8.0"`;
   * plugin -> package;
 
 ## 0.0.5
