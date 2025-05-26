@@ -1,5 +1,5 @@
 name: staggered_reorderable
-description: 可拖拽的不规则瀑布流排序
+description: Drag-and-drop irregular waterfall flow sorting.
 version: 0.0.7
 homepage: https://github.com/jingluoguo/staggered_reorderable
 
