@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -6,15 +8,6 @@ import 'item_model.dart';
 /// guoshijun created this file at 2022/5/5 10:05 上午
 ///
 /// 渲染瀑布流及支持拖拽布局
-
-/// 最大高度
-double maxContainerHeight = 0.0;
-
-/// 最大宽度
-double maxContainerWidth = 0.0;
-
-/// 单元格大小
-double itemCell = 0.0;
 
 class CustomerMultiChildView extends StatefulWidget {
   final int columnNum;
@@ -63,8 +56,27 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
   late AnimationController _controller;
 
+  late ScrollController _scrollController;
+
+  late GlobalKey _globalKey;
+
+  Timer? _timer;
+
+  /// 单元格大小
+  double itemCell = 0.0;
+
+  // todo: 需要支持横向布局
+  void _initData() {
+    if (widget.scrollDirection == Axis.vertical) {
+      _maxScrollHeight = 0.0;
+    } else {
+      _maxScrollHeight = widget.containerHeight;
+    }
+  }
+
   @override
   void initState() {
+    _globalKey = GlobalKey();
     itemAll = widget.itemAll;
     _controller = AnimationController(
       lowerBound: 0.0,
@@ -79,6 +91,8 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
         }
         setState(() {});
       });
+    _scrollController = ScrollController();
+    _initData();
     super.initState();
   }
 
@@ -89,6 +103,95 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
       setState(() {});
     }
     super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  double upRedundancy = 40;
+  double downRedundancy = 40;
+  double scrollStep = 10;
+
+  bool _startScroll = false;
+  bool _isScrolling = false;
+
+  // 跟手滑动相关代码
+  void _autoScrollToUp() async {
+    if (_isScrolling) return;
+    _isScrolling = true;
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      if (!_startScroll) {
+        _timer?.cancel();
+        return;
+      }
+
+      var newPosition = _scrollController.offset - scrollStep;
+      if (newPosition < 0) {
+        newPosition = 0;
+      }
+      _scrollController.jumpTo(newPosition);
+      if (newPosition == 0) {
+        _stopScroll();
+      }
+    });
+  }
+
+  void _autoScrollToDown() async {
+    if (_isScrolling) return;
+    _isScrolling = true;
+    _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+      if (!_startScroll) {
+        _timer?.cancel();
+        return;
+      }
+
+      var newPosition = _scrollController.offset + scrollStep;
+      if (newPosition > _scrollController.position.maxScrollExtent) {
+        newPosition = _scrollController.position.maxScrollExtent;
+      }
+      _scrollController.jumpTo(newPosition);
+      if (newPosition == _scrollController.position.maxScrollExtent) {
+        _stopScroll();
+      }
+    });
+  }
+
+  void _startUpScroll() {
+    _startScroll = true;
+    _autoScrollToUp();
+  }
+
+  void _startDownScroll() {
+    _startScroll = true;
+    _autoScrollToDown();
+  }
+
+  void _stopScroll() {
+    _startScroll = false;
+    _isScrolling = false;
+    _timer?.cancel();
+  }
+
+  void _autoScroll(DragUpdateDetails details) {
+    RenderBox renderBox =
+        _globalKey.currentContext!.findRenderObject() as RenderBox;
+    Rect box = renderBox.localToGlobal(Offset.zero) & renderBox.size;
+    if (widget.scrollDirection == Axis.vertical) {
+      var offsetUpY = details.localPosition.dy - box.top - upRedundancy;
+      var offsetDownY = details.localPosition.dy + downRedundancy - box.bottom;
+      if (offsetUpY < 0) {
+        _startUpScroll();
+      } else if (offsetDownY > 0) {
+        _startDownScroll();
+      } else {
+        _stopScroll();
+      }
+    }
   }
 
   /// 防抖处理
@@ -220,11 +323,13 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 onDraggableCanceled: (Velocity velocity, Offset offset) {
                   // print('=== onDraggableCanceled');
                 },
+                onDragUpdate: (details) => _autoScroll(details),
                 onDragCompleted: () {
                   // print('=== onDragCompleted');
                   dragItem = -1;
                   nowAcceptIndex = -1;
                   nowMoveIndex = -1;
+                  _stopScroll();
                 },
               )
             : Container(
@@ -247,27 +352,50 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     return list;
   }
 
+  double _maxScrollHeight = 0.0;
+  double _maxScrollWidget = 0.0;
+
   @override
   Widget build(BuildContext context) {
-    if (maxContainerWidth == 0.0) {
-      maxContainerWidth = MediaQuery.of(context).size.width;
-    }
-    if (maxContainerHeight == 0.0) {
-      maxContainerHeight = MediaQuery.of(context).size.height;
+    if (widget.scrollDirection == Axis.vertical) {
+      _maxScrollWidget = MediaQuery.of(context).size.width;
+      var width = MediaQuery.of(context).size.width;
+      itemCell =
+          (width - (widget.columnNum + 1) * widget.padding) / widget.columnNum;
     }
     return SingleChildScrollView(
+      key: _globalKey,
       scrollDirection: widget.scrollDirection,
+      controller: _scrollController,
       child: SizedBox(
-        height: widget.scrollDirection == Axis.vertical
-            ? maxContainerHeight
-            : widget.containerHeight,
-        width: maxContainerWidth,
+        height: _maxScrollHeight,
+        width: _maxScrollWidget,
         child: CustomMultiChildLayout(
           delegate: widget.scrollDirection == Axis.vertical
-              ? ProxyVerticalClass(itemAll, itemChangeAll, process,
-                  widget.columnNum, widget.padding)
-              : ProxyHorizontalClass(itemAll, itemChangeAll, process,
-                  widget.columnNum, widget.padding, widget.containerHeight),
+              ? ProxyVerticalClass(
+                  itemAll,
+                  itemChangeAll,
+                  process,
+                  widget.columnNum,
+                  widget.padding,
+                  itemCell, callback: (value) {
+                  if (value == _maxScrollHeight) return;
+
+                  /// 需要强行刷新一下，防止滑动区域有问题
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _maxScrollHeight = value;
+                    });
+                  });
+                })
+              : ProxyHorizontalClass(
+                  itemAll,
+                  itemChangeAll,
+                  process,
+                  widget.columnNum,
+                  widget.padding,
+                  widget.containerHeight,
+                  itemCell),
           children: generateList(),
         ),
       ),
@@ -282,9 +410,12 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
   final double process;
   final int columnNum;
   final double padding;
+  final double itemCell;
+  final Function(double value)? callback;
 
   ProxyVerticalClass(this.itemAll, this.itemChangeAll, this.process,
-      this.columnNum, this.padding) {
+      this.columnNum, this.padding, this.itemCell,
+      {this.callback}) {
     // 累计每列的高度
     columnH = List.generate(columnNum, (index) {
       return 0.0;
@@ -302,7 +433,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
   /// 判断当前行是否可以存放此widget,
   /// 查到后返回index > 0
   /// 未查到返回index = -1
-  int checkNowRow(Size size, double itemCell, List columnH, List columnLastH) {
+  int checkNowRow(Size size, List columnH, List columnLastH) {
     int insertIndex = -1;
     // 找到最大值
     double maxHeight = columnH.fold(
@@ -394,7 +525,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
                   ((itemAll[i].mainAxisCellCount!) - 1) * padding));
 
       if (true) {
-        int insertIndex = checkNowRow(itemSize, itemCell, columnH, columnLastH);
+        int insertIndex = checkNowRow(itemSize, columnH, columnLastH);
         if (insertIndex == -1) {
           offsetX = 0;
           nowRowIndex = 0;
@@ -436,9 +567,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
     for (var element in columnH) {
       tempHeight = max(tempHeight, element);
     }
-    if (tempHeight != 0.0) {
-      maxContainerHeight = tempHeight;
-    }
+    callback?.call(tempHeight);
     columnH.clear();
     columnLastH.clear();
   }
@@ -460,10 +589,6 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
 
   @override
   void performLayout(Size size) {
-    double actualWidth = size.width - (columnNum + 1) * padding;
-
-    itemCell = actualWidth / columnNum;
-
     List<ItemPosition> itemPositionList = calculateFormLayout(itemAll);
 
     if (itemChangeAll.isEmpty) {
@@ -536,7 +661,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
 
       // 当前widget横向排布后越界处理
       if (true) {
-        int insertIndex = checkNowRow(itemSize, itemCell, columnH, columnLastH);
+        int insertIndex = checkNowRow(itemSize, columnH, columnLastH);
         if (insertIndex == -1) {
           offsetX = 0;
           nowRowIndex = 0;
@@ -576,9 +701,12 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
   final int columnNum;
   final double padding;
   final double containerHeight;
+  final double itemCell;
+  final Function(double value)? callback;
 
   ProxyHorizontalClass(this.itemAll, this.itemChangeAll, this.process,
-      this.columnNum, this.padding, this.containerHeight) {
+      this.columnNum, this.padding, this.containerHeight, this.itemCell,
+      {this.callback}) {
     // 累计每行的宽度
     rowW = List.generate(columnNum, (index) {
       return 0.0;
@@ -589,7 +717,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
       return 0.0;
     });
 
-    itemCell = containerHeight / columnNum;
+    // itemCell = containerHeight / columnNum;
   }
 
   late List rowW;
@@ -674,9 +802,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
     for (var element in rowW) {
       tempWidth = max(tempWidth, element);
     }
-    if (tempWidth != 0.0 && tempWidth > maxContainerWidth) {
-      maxContainerWidth = tempWidth;
-    }
+    callback?.call(tempWidth);
     rowW.clear();
     rowLastW.clear();
   }
