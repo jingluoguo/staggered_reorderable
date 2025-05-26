@@ -18,17 +18,21 @@ class CustomerMultiChildView extends StatefulWidget {
   final bool collation;
   final bool canDrag;
   final Axis scrollDirection;
-  final double containerHeight;
+  final double forwardRedundancy;
+  final double backwardRedundancy;
+  final double scrollStep;
   const CustomerMultiChildView(
     this.itemAll,
     this.columnNum,
     this.padding,
     this.duration,
     this.antiShakeDuration,
-    this.canDrag, {
+    this.canDrag,
+    this.forwardRedundancy,
+    this.backwardRedundancy,
+    this.scrollStep, {
     Key? key,
     this.collation = false,
-    this.containerHeight = 600.0,
     this.scrollDirection = Axis.vertical,
   }) : super(key: key);
 
@@ -38,6 +42,10 @@ class CustomerMultiChildView extends StatefulWidget {
 
 class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     with SingleTickerProviderStateMixin {
+  double get forwardRedundancy => widget.forwardRedundancy;
+  double get backwardRedundancy => widget.backwardRedundancy;
+  double get scrollStep => widget.scrollStep;
+
   /// 正在拖拽的item
   int dragItem = -1;
 
@@ -65,15 +73,6 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   /// 单元格大小
   double itemCell = 0.0;
 
-  // todo: 需要支持横向布局
-  void _initData() {
-    if (widget.scrollDirection == Axis.vertical) {
-      _maxScrollHeight = 0.0;
-    } else {
-      _maxScrollHeight = widget.containerHeight;
-    }
-  }
-
   @override
   void initState() {
     _globalKey = GlobalKey();
@@ -92,7 +91,6 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
         setState(() {});
       });
     _scrollController = ScrollController();
-    _initData();
     super.initState();
   }
 
@@ -112,10 +110,6 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     _scrollController.dispose();
     super.dispose();
   }
-
-  double upRedundancy = 40;
-  double downRedundancy = 40;
-  double scrollStep = 10;
 
   bool _startScroll = false;
   bool _isScrolling = false;
@@ -181,16 +175,24 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     RenderBox renderBox =
         _globalKey.currentContext!.findRenderObject() as RenderBox;
     Rect box = renderBox.localToGlobal(Offset.zero) & renderBox.size;
+
+    var offsetForward = 0.0;
+    var offsetBackward = 0.0;
     if (widget.scrollDirection == Axis.vertical) {
-      var offsetUpY = details.localPosition.dy - box.top - upRedundancy;
-      var offsetDownY = details.localPosition.dy + downRedundancy - box.bottom;
-      if (offsetUpY < 0) {
-        _startUpScroll();
-      } else if (offsetDownY > 0) {
-        _startDownScroll();
-      } else {
-        _stopScroll();
-      }
+      offsetForward = details.localPosition.dy - box.top - forwardRedundancy;
+      offsetBackward =
+          details.localPosition.dy + backwardRedundancy - box.bottom;
+    } else {
+      offsetForward = details.localPosition.dx - box.left - forwardRedundancy;
+      offsetBackward =
+          details.localPosition.dx + backwardRedundancy - box.right;
+    }
+    if (offsetForward < 0) {
+      _startUpScroll();
+    } else if (offsetBackward > 0) {
+      _startDownScroll();
+    } else {
+      _stopScroll();
     }
   }
 
@@ -353,15 +355,19 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   }
 
   double _maxScrollHeight = 0.0;
-  double _maxScrollWidget = 0.0;
+  double _maxScrollWidth = 0.0;
 
   @override
   Widget build(BuildContext context) {
     if (widget.scrollDirection == Axis.vertical) {
-      _maxScrollWidget = MediaQuery.of(context).size.width;
+      _maxScrollWidth = MediaQuery.of(context).size.width;
       var width = MediaQuery.of(context).size.width;
       itemCell =
           (width - (widget.columnNum + 1) * widget.padding) / widget.columnNum;
+    } else {
+      _maxScrollHeight = MediaQuery.of(context).size.height;
+      itemCell = (_maxScrollHeight - (widget.columnNum + 1) * widget.padding) /
+          widget.columnNum;
     }
     return SingleChildScrollView(
       key: _globalKey,
@@ -369,7 +375,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
       controller: _scrollController,
       child: SizedBox(
         height: _maxScrollHeight,
-        width: _maxScrollWidget,
+        width: _maxScrollWidth,
         child: CustomMultiChildLayout(
           delegate: widget.scrollDirection == Axis.vertical
               ? ProxyVerticalClass(
@@ -394,8 +400,14 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   process,
                   widget.columnNum,
                   widget.padding,
-                  widget.containerHeight,
-                  itemCell),
+                  itemCell, callback: (value) {
+                  /// 需要强行刷新一下，防止滑动区域有问题
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _maxScrollWidth = value;
+                    });
+                  });
+                }),
           children: generateList(),
         ),
       ),
@@ -700,12 +712,11 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
   final double process;
   final int columnNum;
   final double padding;
-  final double containerHeight;
   final double itemCell;
   final Function(double value)? callback;
 
   ProxyHorizontalClass(this.itemAll, this.itemChangeAll, this.process,
-      this.columnNum, this.padding, this.containerHeight, this.itemCell,
+      this.columnNum, this.padding, this.itemCell,
       {this.callback}) {
     // 累计每行的宽度
     rowW = List.generate(columnNum, (index) {

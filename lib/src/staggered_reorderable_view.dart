@@ -35,8 +35,14 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 是否允许拖拽
   final bool canDrag;
 
-  /// 布局区域高度，仅在[Axis.horizontal]时生效
-  final double containerHeight;
+  /// 自动滚动冗余偏移量 [Axis.vertical] 向上; [Axis.horizontal] 向左;
+  final double forwardRedundancy;
+
+  /// 自动滚动冗余偏移量 [Axis.vertical] 向下; [Axis.horizontal] 向右;
+  final double backwardRedundancy;
+
+  /// 每次自动滚动长度
+  final double scrollStep;
 
   /// 创建一个可拖动的不规则图形瀑布流.
   ///
@@ -52,7 +58,11 @@ class StaggeredReorderableView extends StatelessWidget {
   ///
   /// [collation] : 拖拽交换规则,[true]为交换，[false]为插入.
   ///
-  /// [containerHeight] : 当 [scrollDirection] 选择 [Axis.horizontal] 时,才会生效.
+  /// [forwardRedundancy] : 自动滚动冗余偏移量 [Axis.vertical] 向上; [Axis.horizontal] 向左;
+  ///
+  /// [backwardRedundancy] : 自动滚动冗余偏移量 [Axis.vertical] 向下; [Axis.horizontal] 向右;
+  ///
+  /// [scrollStep] : 每次自动滚动长度.
   ///
   const StaggeredReorderableView.customer(
       {Key? key,
@@ -64,7 +74,9 @@ class StaggeredReorderableView extends StatelessWidget {
       int columnNum = 3,
       double padding = 5.0,
       bool canDrag = true,
-      double containerHeight = 600.0})
+      double forwardRedundancy = 40.0,
+      double backwardRedundancy = 40.0,
+      double scrollStep = 10.0})
       : this(
             key: key,
             children: children,
@@ -75,27 +87,38 @@ class StaggeredReorderableView extends StatelessWidget {
             columnNum: columnNum,
             padding: padding,
             canDrag: canDrag,
-            containerHeight: containerHeight);
+            forwardRedundancy: forwardRedundancy,
+            backwardRedundancy: backwardRedundancy,
+            scrollStep: scrollStep);
 
   const StaggeredReorderableView({
     Key? key,
     required this.children,
-    this.scrollDirection = Axis.vertical,
-    this.duration = const Duration(milliseconds: 300),
-    this.antiShakeDuration = const Duration(milliseconds: 100),
-    this.collation = false,
-    this.columnNum = 3,
-    this.padding = 5.0,
-    this.canDrag = true,
-    this.containerHeight = 600.0,
+    required this.scrollDirection,
+    required this.duration,
+    required this.antiShakeDuration,
+    required this.collation,
+    required this.columnNum,
+    required this.padding,
+    required this.canDrag,
+    required this.forwardRedundancy,
+    required this.backwardRedundancy,
+    required this.scrollStep,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomerMultiChildView(
-        children, columnNum, padding, duration, antiShakeDuration, canDrag,
+        children,
+        columnNum,
+        padding,
+        duration,
+        antiShakeDuration,
+        canDrag,
+        forwardRedundancy,
+        backwardRedundancy,
+        scrollStep,
         collation: collation,
-        scrollDirection: scrollDirection,
-        containerHeight: containerHeight);
+        scrollDirection: scrollDirection);
   }
 }
