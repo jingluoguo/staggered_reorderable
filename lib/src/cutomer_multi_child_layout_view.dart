@@ -283,13 +283,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                       ),
                     );
                   },
-                  onWillAccept: (moveData) {
-                    // print('=== onWillAccept: $moveData ==> ${itemAll[index].index}');
-                    var accept = moveData != null;
+                  onWillAcceptWithDetails: (details) {
+                    var accept = details.data != null;
                     if (accept &&
                         dragItem != itemAll[index].index! &&
-                        itemAll[index].index != moveData) {
-                      antiShakeProcessing(moveData, itemAll[index].index);
+                        itemAll[index].index != details.data) {
+                      antiShakeProcessing(details.data, itemAll[index].index);
                     }
                     return accept;
                   },
