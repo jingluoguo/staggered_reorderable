@@ -1,27 +1,31 @@
 ## 0.0.7
 
-* TODO: 支持拖拽移动时自动跟手；优化首次渲染时无法正常移动；
+* TODO: 
+  * Support automatic hand tracking when dragging and moving; 
+  * optimize the problem of not being able to move normally during the first rendering;
 
 ## 0.0.6
 
-* TODO: 修改SDK限制为`sdk: ">=2.16.2"`；plugin -> package；
+* TODO: 
+  * Modify SDK restriction to `sdk: ">=2.16.2 <3.8.0"`;
+  * plugin -> package;
 
 ## 0.0.5
 
-* TODO: 优化包结构
+* TODO: Optimize package structure
 
 ## 0.0.4
 
-* TODO: 修复初始化页面时，无法拖动的BUG
+* TODO: Fixed the bug that the page cannot be dragged when it is initialized
 
 ## 0.0.3
 
-* TODO: 支持不规则拖拽(即：不规则图形瀑布流)、动态刷新staggered_reorderable组件所占大小、支持横向排版
+* TODO: Support irregular drag (i.e. irregular graphic waterfall flow), dynamically refresh the size of staggered_reorderable components, and support horizontal layout
 
 ## 0.0.2
 
-* TODO: 支持macos,windows平台
+* TODO: Support macos, windows platforms
 
 ## 0.0.1
 
-* TODO: 可支持拖拽排序不规则图形瀑布流
+* TODO: Supports drag and drop sorting of irregular graphic waterfall flows
