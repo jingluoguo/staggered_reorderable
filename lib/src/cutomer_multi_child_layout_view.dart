@@ -11,7 +11,7 @@ import 'item_model.dart';
 
 class CustomerMultiChildView extends StatefulWidget {
   final int columnNum;
-  final List<CustomerItem> itemAll;
+  final List<ReorderableItem> children;
   final double padding;
   final Duration duration;
   final Duration antiShakeDuration;
@@ -22,7 +22,7 @@ class CustomerMultiChildView extends StatefulWidget {
   final double backwardRedundancy;
   final double scrollStep;
   const CustomerMultiChildView(
-    this.itemAll,
+    this.children,
     this.columnNum,
     this.padding,
     this.duration,
@@ -58,9 +58,9 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   /// 拖拽进度
   double process = 0.0;
 
-  List<CustomerItem> itemAll = [];
+  List<ReorderableItem> itemAll = [];
 
-  List<CustomerItem> itemChangeAll = [];
+  List<ReorderableItem> itemChangeAll = [];
 
   late AnimationController _controller;
 
@@ -76,7 +76,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   @override
   void initState() {
     _globalKey = GlobalKey();
-    itemAll = widget.itemAll;
+    itemAll = widget.children;
     _controller = AnimationController(
       lowerBound: 0.0,
       upperBound: 1.0,
@@ -96,8 +96,8 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
   @override
   void didUpdateWidget(covariant CustomerMultiChildView oldWidget) {
-    if (oldWidget.itemAll.length != widget.itemAll.length) {
-      itemAll = widget.itemAll;
+    if (oldWidget.children.length != widget.children.length) {
+      itemAll = widget.children;
       setState(() {});
     }
     super.didUpdateWidget(oldWidget);
@@ -226,11 +226,11 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     if (!widget.collation) {
       setState(() {
         var moveData =
-            itemChangeAll.firstWhere((element) => element.index == moveIndex);
+            itemChangeAll.firstWhere((element) => element.trackingNumber == moveIndex);
         var reIndex = itemChangeAll.indexOf(moveData);
         itemChangeAll.remove(moveData);
         var receiveIndex =
-            itemChangeAll.indexWhere((element) => element.index == toIndex);
+            itemChangeAll.indexWhere((element) => element.trackingNumber == toIndex);
         if (receiveIndex >= reIndex) receiveIndex += 1;
         itemChangeAll.insert(receiveIndex, moveData);
       });
@@ -241,11 +241,11 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
       // });
       setState(() {
         var moveData =
-            itemChangeAll.firstWhere((element) => element.index == moveIndex);
+            itemChangeAll.firstWhere((element) => element.trackingNumber == moveIndex);
         var reIndex = itemChangeAll.indexOf(moveData);
         itemChangeAll.remove(moveData);
         var receiveIndex =
-            itemChangeAll.indexWhere((element) => element.index == toIndex);
+            itemChangeAll.indexWhere((element) => element.trackingNumber == toIndex);
         // if (receiveIndex >= reIndex) receiveIndex += 1;
         itemChangeAll.insert(receiveIndex, moveData);
         var receiveData = itemChangeAll.removeAt(receiveIndex + 1);
@@ -269,7 +269,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
         id: itemAll[index].id!,
         child: widget.canDrag
             ? LongPressDraggable(
-                data: itemAll[index].index,
+                data: itemAll[index].trackingNumber,
                 child: DragTarget(
                   builder: (context, candidateData, rejectedData) {
                     return Container(
@@ -286,9 +286,9 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   onWillAcceptWithDetails: (details) {
                     var accept = details.data != null;
                     if (accept &&
-                        dragItem != itemAll[index].index! &&
-                        itemAll[index].index != details.data) {
-                      antiShakeProcessing(details.data, itemAll[index].index);
+                        dragItem != itemAll[index].trackingNumber! &&
+                        itemAll[index].trackingNumber != details.data) {
+                      antiShakeProcessing(details.data, itemAll[index].trackingNumber);
                     }
                     return accept;
                   },
@@ -297,7 +297,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                     if (moveData == nowMoveIndex) {
                       nowMoveIndex = -1;
                     }
-                    if (itemAll[index].index == nowAcceptIndex) {
+                    if (itemAll[index].trackingNumber == nowAcceptIndex) {
                       nowAcceptIndex = -1;
                     }
                   },
@@ -319,7 +319,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 ),
                 onDragStarted: () {
                   // print('=== onDragStarted');
-                  dragItem = itemAll[index].index!;
+                  dragItem = itemAll[index].trackingNumber!;
                 },
                 onDraggableCanceled: (Velocity velocity, Offset offset) {
                   // print('=== onDraggableCanceled');
@@ -416,8 +416,8 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
 /// [Axis.vertical]
 class ProxyVerticalClass extends MultiChildLayoutDelegate {
-  final List<CustomerItem> itemAll;
-  final List<CustomerItem> itemChangeAll;
+  final List<ReorderableItem> itemAll;
+  final List<ReorderableItem> itemChangeAll;
   final double process;
   final int columnNum;
   final double padding;
@@ -514,7 +514,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
 
   /// 实际计算每个item位置，
   /// 返回所有所有item信息
-  List<ItemPosition> calculateFormLayout(List<CustomerItem> itemAll) {
+  List<ItemPosition> calculateFormLayout(List<ReorderableItem> itemAll) {
     List<ItemPosition> calculateItemPosition = [];
     // x轴偏移量
     double offsetX = 0;
@@ -640,7 +640,8 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
   }
 
   /// 计算拖拽排序后的item位置(拖拽)
-  List<ItemPosition> calculateDragFormLayout(List<CustomerItem> itemChangeAll) {
+  List<ItemPosition> calculateDragFormLayout(
+      List<ReorderableItem> itemChangeAll) {
     List<ItemPosition> calculateItemPosition = [];
 
     // 累计每列的高度
@@ -706,8 +707,8 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
 
 /// [Axis.horizontal]
 class ProxyHorizontalClass extends MultiChildLayoutDelegate {
-  final List<CustomerItem> itemAll;
-  final List<CustomerItem> itemChangeAll;
+  final List<ReorderableItem> itemAll;
+  final List<ReorderableItem> itemChangeAll;
   final double process;
   final int columnNum;
   final double padding;
@@ -833,7 +834,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
   }
 
   /// 计算每个item位置
-  List<ItemPosition> calculateFormLayout(List<CustomerItem> itemAll) {
+  List<ItemPosition> calculateFormLayout(List<ReorderableItem> itemAll) {
     List<ItemPosition> calculateItemPosition = [];
 
     // Y轴偏移量
@@ -930,7 +931,8 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
   }
 
   /// 计算拖拽排序后的item位置(拖拽)
-  List<ItemPosition> calculateDragFormLayout(List<CustomerItem> itemChangeAll) {
+  List<ItemPosition> calculateDragFormLayout(
+      List<ReorderableItem> itemChangeAll) {
     List<ItemPosition> calculateItemPosition = [];
 
     // 累计每列的高度

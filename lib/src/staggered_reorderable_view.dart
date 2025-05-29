@@ -22,9 +22,9 @@ class StaggeredReorderableView extends StatelessWidget {
   final bool collation;
 
   /// 布局的子项
-  /// [CustomerItem.id]不允许存在重复值
-  /// [CustomerItem.index]不允许存在重复值
-  final List<CustomerItem> children;
+  /// [ReorderableItem.id]不允许存在重复值
+  /// [ReorderableItem.trackingNumber]不允许存在重复值
+  final List<ReorderableItem> children;
 
   /// 每行个数
   final int columnNum;
@@ -66,7 +66,7 @@ class StaggeredReorderableView extends StatelessWidget {
   ///
   const StaggeredReorderableView.customer(
       {Key? key,
-      required List<CustomerItem> children,
+      required List<ReorderableItem> children,
       Axis scrollDirection = Axis.vertical,
       Duration duration = const Duration(milliseconds: 300),
       Duration antiShakeDuration = const Duration(milliseconds: 100),

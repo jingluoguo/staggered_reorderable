@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 /// guoshijun created this file at 2022/5/5 11:58 上午
 ///
 /// 子项model
-class CustomerItem {
-  int? index;
+class ReorderableItem {
+  int? trackingNumber;
   String? id;
   int? crossAxisCellCount;
   int? mainAxisCellCount;
   Widget child;
 
-  CustomerItem(this.index, this.id, this.child,
-      {this.crossAxisCellCount = 1, this.mainAxisCellCount = 1});
+  ReorderableItem(this.trackingNumber, this.id,
+      {required this.child,
+      this.crossAxisCellCount = 1,
+      this.mainAxisCellCount = 1});
 
-  bool compare(CustomerItem next) {
+  bool compare(ReorderableItem next) {
     if (id == next.id &&
         crossAxisCellCount == next.crossAxisCellCount &&
         mainAxisCellCount == next.mainAxisCellCount &&
@@ -23,7 +25,7 @@ class CustomerItem {
     return false;
   }
 
-  void changeToValue(CustomerItem item) {
+  void changeToValue(ReorderableItem item) {
     id = item.id;
     mainAxisCellCount = item.mainAxisCellCount;
     crossAxisCellCount = item.crossAxisCellCount;
@@ -32,7 +34,7 @@ class CustomerItem {
 
   @override
   String toString() {
-    return "index: $index, id: $id, crossAxisCellCount: $crossAxisCellCount, mainAxisCellCount: $mainAxisCellCount, child: $child";
+    return "trackingNumber: $trackingNumber, id: $id, crossAxisCellCount: $crossAxisCellCount, mainAxisCellCount: $mainAxisCellCount, child: $child";
   }
 }
 
