@@ -26,11 +26,11 @@ class StaggeredReorderableView extends StatelessWidget {
   /// [ReorderableItem.trackingNumber]不允许存在重复值
   final List<ReorderableItem> children;
 
-  /// 每行个数
+  /// 每行个数，默认3
   final int columnNum;
 
   /// 边距
-  final double padding;
+  final double spacing;
 
   /// 是否允许拖拽
   final bool canDrag;
@@ -41,7 +41,7 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 自动滚动冗余偏移量 [Axis.vertical] 向下; [Axis.horizontal] 向右;
   final double backwardRedundancy;
 
-  /// 每次自动滚动长度
+  /// 每次自动滚动长度，默认10.0
   final double scrollStep;
 
   /// 创建一个可拖动的不规则图形瀑布流.
@@ -72,7 +72,7 @@ class StaggeredReorderableView extends StatelessWidget {
       Duration antiShakeDuration = const Duration(milliseconds: 100),
       bool collation = false,
       int columnNum = 3,
-      double padding = 5.0,
+      double spacing = 5.0,
       bool canDrag = true,
       double forwardRedundancy = 40.0,
       double backwardRedundancy = 40.0,
@@ -85,7 +85,7 @@ class StaggeredReorderableView extends StatelessWidget {
             antiShakeDuration: antiShakeDuration,
             collation: collation,
             columnNum: columnNum,
-            padding: padding,
+            spacing: spacing,
             canDrag: canDrag,
             forwardRedundancy: forwardRedundancy,
             backwardRedundancy: backwardRedundancy,
@@ -99,7 +99,7 @@ class StaggeredReorderableView extends StatelessWidget {
     required this.antiShakeDuration,
     required this.collation,
     required this.columnNum,
-    required this.padding,
+    required this.spacing,
     required this.canDrag,
     required this.forwardRedundancy,
     required this.backwardRedundancy,
@@ -111,7 +111,7 @@ class StaggeredReorderableView extends StatelessWidget {
     return CustomerMultiChildView(
         children,
         columnNum,
-        padding,
+        spacing,
         duration,
         antiShakeDuration,
         canDrag,
