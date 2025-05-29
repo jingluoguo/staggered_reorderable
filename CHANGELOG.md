@@ -1,6 +1,13 @@
+## 0.0.12
+
+* TODO:
+  * Optimize parameter names
+  * Optimize [ReorderableItem] model
+  * Add [onReorder] to get the reordered trackingNumber list
+
 ## 0.0.11
 
-* TODO: onWillAccept -> onWillAcceptWithDetails
+* TODO: [onWillAccept] -> [onWillAcceptWithDetails]
 
 ## 0.0.10
 
