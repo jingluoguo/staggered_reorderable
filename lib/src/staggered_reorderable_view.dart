@@ -44,6 +44,9 @@ class StaggeredReorderableView extends StatelessWidget {
   /// 每次自动滚动长度，默认10.0
   final double scrollStep;
 
+  /// 每次交换完会调用此方法，获取排序后的trackingNumber列表
+  final Function(List<int>)? onReorder;
+
   /// 创建一个可拖动的不规则图形瀑布流.
   ///
   /// [canDrag] : 控制是否允许拖动,默认为`true`.
@@ -76,7 +79,8 @@ class StaggeredReorderableView extends StatelessWidget {
       bool canDrag = true,
       double forwardRedundancy = 40.0,
       double backwardRedundancy = 40.0,
-      double scrollStep = 10.0})
+      double scrollStep = 10.0,
+      Function(List<int>)? onReorder})
       : this(
             key: key,
             children: children,
@@ -89,7 +93,8 @@ class StaggeredReorderableView extends StatelessWidget {
             canDrag: canDrag,
             forwardRedundancy: forwardRedundancy,
             backwardRedundancy: backwardRedundancy,
-            scrollStep: scrollStep);
+            scrollStep: scrollStep,
+            onReorder: onReorder);
 
   const StaggeredReorderableView({
     Key? key,
@@ -104,6 +109,7 @@ class StaggeredReorderableView extends StatelessWidget {
     required this.forwardRedundancy,
     required this.backwardRedundancy,
     required this.scrollStep,
+    this.onReorder,
   }) : super(key: key);
 
   @override
@@ -119,6 +125,7 @@ class StaggeredReorderableView extends StatelessWidget {
         backwardRedundancy,
         scrollStep,
         collation: collation,
-        scrollDirection: scrollDirection);
+        scrollDirection: scrollDirection,
+        onReorder: onReorder);
   }
 }

@@ -21,6 +21,7 @@ class CustomerMultiChildView extends StatefulWidget {
   final double forwardRedundancy;
   final double backwardRedundancy;
   final double scrollStep;
+  final Function(List<int>)? onReorder;
   const CustomerMultiChildView(
     this.children,
     this.columnNum,
@@ -34,6 +35,7 @@ class CustomerMultiChildView extends StatefulWidget {
     Key? key,
     this.collation = false,
     this.scrollDirection = Axis.vertical,
+    this.onReorder,
   }) : super(key: key);
 
   @override
@@ -225,12 +227,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     }
     if (!widget.collation) {
       setState(() {
-        var moveData =
-            itemChangeAll.firstWhere((element) => element.trackingNumber == moveIndex);
+        var moveData = itemChangeAll
+            .firstWhere((element) => element.trackingNumber == moveIndex);
         var reIndex = itemChangeAll.indexOf(moveData);
         itemChangeAll.remove(moveData);
-        var receiveIndex =
-            itemChangeAll.indexWhere((element) => element.trackingNumber == toIndex);
+        var receiveIndex = itemChangeAll
+            .indexWhere((element) => element.trackingNumber == toIndex);
         if (receiveIndex >= reIndex) receiveIndex += 1;
         itemChangeAll.insert(receiveIndex, moveData);
       });
@@ -240,12 +242,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
       //   print(element.toString());
       // });
       setState(() {
-        var moveData =
-            itemChangeAll.firstWhere((element) => element.trackingNumber == moveIndex);
+        var moveData = itemChangeAll
+            .firstWhere((element) => element.trackingNumber == moveIndex);
         var reIndex = itemChangeAll.indexOf(moveData);
         itemChangeAll.remove(moveData);
-        var receiveIndex =
-            itemChangeAll.indexWhere((element) => element.trackingNumber == toIndex);
+        var receiveIndex = itemChangeAll
+            .indexWhere((element) => element.trackingNumber == toIndex);
         // if (receiveIndex >= reIndex) receiveIndex += 1;
         itemChangeAll.insert(receiveIndex, moveData);
         var receiveData = itemChangeAll.removeAt(receiveIndex + 1);
@@ -260,6 +262,11 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
   changeItemChangeAllToItemAll() async {
     itemAll = itemChangeAll;
+    List<int> tns = [];
+    for (var i in itemAll) {
+      tns.add(i.trackingNumber);
+    }
+    widget.onReorder?.call(tns);
     itemChangeAll = [];
   }
 
@@ -288,7 +295,8 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                     if (accept &&
                         dragItem != itemAll[index].trackingNumber &&
                         itemAll[index].trackingNumber != details.data) {
-                      antiShakeProcessing(details.data, itemAll[index].trackingNumber);
+                      antiShakeProcessing(
+                          details.data, itemAll[index].trackingNumber);
                     }
                     return accept;
                   },
@@ -869,8 +877,8 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
         }
       }
 
-      calculateItemPosition.add(ItemPosition(itemAll[i].id,
-          Offset(rowW[nowColumIndex], offsetY + spacing * 0.5)));
+      calculateItemPosition.add(ItemPosition(
+          itemAll[i].id, Offset(rowW[nowColumIndex], offsetY + spacing * 0.5)));
 
       // 修改y轴偏移量
       offsetY += spacing +
