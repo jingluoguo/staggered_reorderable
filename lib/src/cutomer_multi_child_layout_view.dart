@@ -266,7 +266,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
   /// 子项
   Widget generateItem(int index) {
     return LayoutId(
-        id: itemAll[index].id!,
+        id: itemAll[index].id,
         child: widget.canDrag
             ? LongPressDraggable(
                 data: itemAll[index].trackingNumber,
@@ -286,7 +286,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   onWillAcceptWithDetails: (details) {
                     var accept = details.data != null;
                     if (accept &&
-                        dragItem != itemAll[index].trackingNumber! &&
+                        dragItem != itemAll[index].trackingNumber &&
                         itemAll[index].trackingNumber != details.data) {
                       antiShakeProcessing(details.data, itemAll[index].trackingNumber);
                     }
@@ -319,7 +319,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 ),
                 onDragStarted: () {
                   // print('=== onDragStarted');
-                  dragItem = itemAll[index].trackingNumber!;
+                  dragItem = itemAll[index].trackingNumber;
                 },
                 onDraggableCanceled: (Velocity velocity, Offset offset) {
                   // print('=== onDraggableCanceled');
@@ -524,7 +524,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
     for (int i = 0; i < itemAll.length; i++) {
       // 获取当前widget宽高限制
       Size itemSize = layoutChild(
-          itemAll[i].id!,
+          itemAll[i].id,
           BoxConstraints(
               minWidth: itemCell * (itemAll[i].crossAxisCellCount!) +
                   ((itemAll[i].crossAxisCellCount!) - 1) * spacing,
@@ -547,7 +547,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
         }
       }
 
-      calculateItemPosition.add(ItemPosition(itemAll[i].id!,
+      calculateItemPosition.add(ItemPosition(itemAll[i].id,
           Offset(offsetX + spacing * 0.5, columnH[nowRowIndex])));
 
       // 修改x轴偏移量
@@ -684,7 +684,7 @@ class ProxyVerticalClass extends MultiChildLayoutDelegate {
         }
       }
 
-      calculateItemPosition.add(ItemPosition(itemChangeAll[i].id!,
+      calculateItemPosition.add(ItemPosition(itemChangeAll[i].id,
           Offset(offsetX + spacing * 0.5, columnH[nowRowIndex])));
 
       // 修改x轴偏移量
@@ -845,7 +845,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
     for (int i = 0; i < itemAll.length; i++) {
       // 获取当前widget宽高限制
       Size itemSize = layoutChild(
-          itemAll[i].id!,
+          itemAll[i].id,
           BoxConstraints(
               minWidth: itemCell * (itemAll[i].crossAxisCellCount!) +
                   ((itemAll[i].crossAxisCellCount!) - 1) * spacing,
@@ -869,7 +869,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
         }
       }
 
-      calculateItemPosition.add(ItemPosition(itemAll[i].id!,
+      calculateItemPosition.add(ItemPosition(itemAll[i].id,
           Offset(rowW[nowColumIndex], offsetY + spacing * 0.5)));
 
       // 修改y轴偏移量
@@ -975,7 +975,7 @@ class ProxyHorizontalClass extends MultiChildLayoutDelegate {
         }
       }
 
-      calculateItemPosition.add(ItemPosition(itemChangeAll[i].id!,
+      calculateItemPosition.add(ItemPosition(itemChangeAll[i].id,
           Offset(rowW[nowColumIndex], offsetY + spacing * 0.5)));
 
       // 修改y轴偏移量

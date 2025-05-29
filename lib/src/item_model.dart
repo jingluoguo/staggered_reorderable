@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 ///
 /// 子项model
 class ReorderableItem {
-  int? trackingNumber;
-  String? id;
+  int trackingNumber;
+  String id;
   int? crossAxisCellCount;
   int? mainAxisCellCount;
   Widget child;
 
-  ReorderableItem(this.trackingNumber, this.id,
-      {required this.child,
+  ReorderableItem(
+      {required this.trackingNumber,
+      required this.id,
+      required this.child,
       this.crossAxisCellCount = 1,
       this.mainAxisCellCount = 1});
 
