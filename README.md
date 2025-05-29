@@ -25,18 +25,18 @@ import 'package:staggered_reorderable/staggered_reorderable.dart';
 - 定义ItemList:
 
 ```dart
-  List<CustomerItem> itemAll = [
-    CustomerItem(0, "id_0", const Text("A"),
+  List<ReorderableItem> itemAll = [
+    ReorderableItem(trackingNumber: 0, id: "id_0", child: const Text("A"),
         crossAxisCellCount: 1, mainAxisCellCount: 1),
-    CustomerItem(1, "id_1", const Text("B"),
+    ReorderableItem(trackingNumber: 1, id: "id_1", child: const Text("B"),
         crossAxisCellCount: 2, mainAxisCellCount: 1),
-    CustomerItem(2, "id_2",const Text("C"),
+    ReorderableItem(trackingNumber: 2, id: "id_2", child: const Text("C"),
         crossAxisCellCount: 1, mainAxisCellCount: 1),
-    CustomerItem(3, "id_3",const Text("D"),
+    ReorderableItem(trackingNumber: 3, id: "id_3", child: const Text("D"),
         crossAxisCellCount: 2, mainAxisCellCount: 2),
-    CustomerItem(4, "id_4",const Text("E"),
+    ReorderableItem(trackingNumber: 4, id: "id_4", child: const Text("E"),
         crossAxisCellCount: 1, mainAxisCellCount: 1),
-    CustomerItem(5, "id_5",const Text("F"),
+    ReorderableItem(trackingNumber: 5, id: "id_5", child: const Text("F"),
         crossAxisCellCount: 1, mainAxisCellCount: 1),
   ];
 ```
