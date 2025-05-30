@@ -10,7 +10,6 @@
 
 ```yaml
 dependencies:
-  ...
   staggered_reorderable: <latest_version>
 ```
 
