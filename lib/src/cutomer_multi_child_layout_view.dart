@@ -279,15 +279,10 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 data: itemAll[index].trackingNumber,
                 child: DragTarget(
                   builder: (context, candidateData, rejectedData) {
-                    return Container(
+                    return SizedBox(
                       width: itemAll[index].crossAxisCellCount! * itemCell,
                       height: itemAll[index].mainAxisCellCount! * itemCell,
-                      color: Colors.grey,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: Center(child: itemAll[index].child),
-                      ),
+                      child: Center(child: itemAll[index].child),
                     );
                   },
                   onWillAcceptWithDetails: (details) {
@@ -312,16 +307,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 ),
                 childWhenDragging: null,
                 feedback: Material(
-                  child: Container(
+                  color: Colors.transparent,
+                  child: SizedBox(
                     width: itemAll[index].crossAxisCellCount! * itemCell,
                     height: itemAll[index].mainAxisCellCount! * itemCell,
-                    color: Colors.white,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Center(
-                        child: itemAll[index].child,
-                      ),
+                    child: Center(
+                      child: itemAll[index].child,
                     ),
                   ),
                 ),
@@ -341,15 +332,10 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   _stopScroll();
                 },
               )
-            : Container(
+            : SizedBox(
                 width: itemAll[index].crossAxisCellCount! * itemCell,
                 height: itemAll[index].mainAxisCellCount! * itemCell,
-                color: Colors.grey,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Center(child: itemAll[index].child),
-                ),
+                child: Center(child: itemAll[index].child),
               ));
   }
 
