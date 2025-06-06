@@ -265,6 +265,16 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
     itemChangeAll = [];
   }
 
+  void reset(int index) {
+    dragItem = -1;
+    nowAcceptIndex = -1;
+    nowMoveIndex = -1;
+    _stopScroll();
+    if (itemAll[index].placeholder != null) {
+      setState(() {});
+    }
+  }
+
   /// 子项
   Widget generateItem(int index) {
     return LayoutId(
@@ -285,6 +295,10 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                     );
                   },
                   onWillAcceptWithDetails: (details) {
+                    /// 交换过程中，忽略模块自身接收的能力，防止频繁抖动
+                    if (_controller.isAnimating) {
+                      return false;
+                    }
                     var accept = details.data != null;
                     if (accept &&
                         dragItem != itemAll[index].trackingNumber &&
@@ -321,17 +335,12 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                 },
                 onDraggableCanceled: (Velocity velocity, Offset offset) {
                   // print('=== onDraggableCanceled');
+                  reset(index);
                 },
                 onDragUpdate: (details) => _autoScroll(details),
                 onDragCompleted: () {
                   // print('=== onDragCompleted');
-                  dragItem = -1;
-                  nowAcceptIndex = -1;
-                  nowMoveIndex = -1;
-                  _stopScroll();
-
-                  /// 此处需要 setState 防止因为卡顿导致不同步
-                  setState(() {});
+                  reset(index);
 
                   /// 排序完成后才回调，防止在排序过程中多次回调
                   List<int> tns = [];
