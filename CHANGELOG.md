@@ -1,3 +1,11 @@
+## 0.0.14
+
+* TODO:
+  * Sorting completion callback `onReorder`;
+  * support custom `feedback` and `placeholder`;
+  * Optimize critical time jitter;
+  * Fix the issue of state not being cleared when canceling release;
+
 ## 0.0.13
 
 * TODO:
