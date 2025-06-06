@@ -9,13 +9,18 @@ class ReorderableItem {
   int? crossAxisCellCount;
   int? mainAxisCellCount;
   Widget child;
+  Widget? feedback;
+  Widget? placeholder;
 
-  ReorderableItem(
-      {required this.trackingNumber,
-      required this.id,
-      required this.child,
-      this.crossAxisCellCount = 1,
-      this.mainAxisCellCount = 1});
+  ReorderableItem({
+    required this.trackingNumber,
+    required this.id,
+    required this.child,
+    this.crossAxisCellCount = 1,
+    this.mainAxisCellCount = 1,
+    this.feedback,
+    this.placeholder,
+  });
 
   bool compare(ReorderableItem next) {
     if (id == next.id &&
@@ -32,11 +37,13 @@ class ReorderableItem {
     mainAxisCellCount = item.mainAxisCellCount;
     crossAxisCellCount = item.crossAxisCellCount;
     child = item.child;
+    feedback = item.feedback;
+    placeholder = item.placeholder;
   }
 
   @override
   String toString() {
-    return "trackingNumber: $trackingNumber, id: $id, crossAxisCellCount: $crossAxisCellCount, mainAxisCellCount: $mainAxisCellCount, child: $child";
+    return "trackingNumber: $trackingNumber, id: $id, crossAxisCellCount: $crossAxisCellCount, mainAxisCellCount: $mainAxisCellCount, child: $child, feedback: $feedback, placeholder: $placeholder";
   }
 }
 

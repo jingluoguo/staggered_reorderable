@@ -262,11 +262,6 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
 
   changeItemChangeAllToItemAll() async {
     itemAll = itemChangeAll;
-    List<int> tns = [];
-    for (var i in itemAll) {
-      tns.add(i.trackingNumber);
-    }
-    widget.onReorder?.call(tns);
     itemChangeAll = [];
   }
 
@@ -282,7 +277,11 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                     return SizedBox(
                       width: itemAll[index].crossAxisCellCount! * itemCell,
                       height: itemAll[index].mainAxisCellCount! * itemCell,
-                      child: Center(child: itemAll[index].child),
+                      child: Center(
+                          child: dragItem == itemAll[index].trackingNumber
+                              ? itemAll[index].placeholder ??
+                                  itemAll[index].child
+                              : itemAll[index].child),
                     );
                   },
                   onWillAcceptWithDetails: (details) {
@@ -312,7 +311,7 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                     width: itemAll[index].crossAxisCellCount! * itemCell,
                     height: itemAll[index].mainAxisCellCount! * itemCell,
                     child: Center(
-                      child: itemAll[index].child,
+                      child: itemAll[index].feedback ?? itemAll[index].child,
                     ),
                   ),
                 ),
@@ -330,6 +329,16 @@ class _CustomerMultiChildViewState extends State<CustomerMultiChildView>
                   nowAcceptIndex = -1;
                   nowMoveIndex = -1;
                   _stopScroll();
+
+                  /// 此处需要 setState 防止因为卡顿导致不同步
+                  setState(() {});
+
+                  /// 排序完成后才回调，防止在排序过程中多次回调
+                  List<int> tns = [];
+                  for (var i in itemAll) {
+                    tns.add(i.trackingNumber);
+                  }
+                  widget.onReorder?.call(tns);
                 },
               )
             : SizedBox(
